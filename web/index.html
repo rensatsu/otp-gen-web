@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>OTP Generator</title>
+	<meta charset='utf-8' />
+	<link rel='stylesheet' href='assets/css/app.css' />
+
+	<link rel='manifest' href='manifest.json'>
+
+	<meta name='mobile-web-app-capable' content='yes'>
+	<meta name='apple-mobile-web-app-capable' content='yes'>
+	<meta name='application-name' content='OTP Gen'>
+	<meta name='apple-mobile-web-app-title' content='OTP Gen'>
+	<meta name='theme-color' content='#0d47a1'>
+	<meta name='msapplication-navbutton-color' content='#0d47a1'>
+	<meta name='apple-mobile-web-app-status-bar-style' content='black-translucent'>
+	<meta name='msapplication-starturl' content='https://otp.rensatsu.me/'>
+	<meta name='viewport' content='width=device-width, initial-scale=1'>
+
+	<link rel='icon' type='image/png' sizes='16x16' href='/assets/img/icon/icon16.png'>
+	<link rel='apple-touch-icon' type='image/png' sizes='16x16' href='/assets/img/icon/icon16.png'>
+	<link rel='icon' type='image/png' sizes='20x20' href='/assets/img/icon/icon20.png'>
+	<link rel='apple-touch-icon' type='image/png' sizes='20x20' href='/assets/img/icon/icon20.png'>
+	<link rel='icon' type='image/png' sizes='24x24' href='/assets/img/icon/icon24.png'>
+	<link rel='apple-touch-icon' type='image/png' sizes='24x24' href='/assets/img/icon/icon24.png'>
+	<link rel='icon' type='image/png' sizes='32x32' href='/assets/img/icon/icon32.png'>
+	<link rel='apple-touch-icon' type='image/png' sizes='32x32' href='/assets/img/icon/icon32.png'>
+	<link rel='icon' type='image/png' sizes='48x48' href='/assets/img/icon/icon48.png'>
+	<link rel='apple-touch-icon' type='image/png' sizes='48x48' href='/assets/img/icon/icon48.png'>
+	<link rel='icon' type='image/png' sizes='64x64' href='/assets/img/icon/icon64.png'>
+	<link rel='apple-touch-icon' type='image/png' sizes='64x64' href='/assets/img/icon/icon64.png'>
+	<link rel='icon' type='image/png' sizes='128x128' href='/assets/img/icon/icon128.png'>
+	<link rel='apple-touch-icon' type='image/png' sizes='128x128' href='/assets/img/icon/icon128.png'>
+	<link rel='icon' type='image/png' sizes='256x256' href='/assets/img/icon/icon256.png'>
+	<link rel='apple-touch-icon' type='image/png' sizes='256x256' href='/assets/img/icon/icon256.png'>
+	<link rel='icon' type='image/png' sizes='512x512' href='/assets/img/icon/icon512.png'>
+	<link rel='apple-touch-icon' type='image/png' sizes='512x512' href='/assets/img/icon/icon512.png'>
+	<link rel='icon' type='image/svg+xml' sizes='128x128' href='/assets/img/icon/icon.svg'>
+	<link rel='apple-touch-icon' type='image/svg+xml' sizes='128x128' href='/assets/img/icon/icon.svg'>
+</head>
+<body>
+	<nav>
+		<div class='container'>
+			<h1 class='nav-brand'><span data-icon='logo'></span>OTP Gen</h1>
+			<ul class='nav-menu'>
+				<!-- <li><a href='javascript:' title='Remaining' id='app-remaining'></a></li> -->
+				<li><a href='javascript:' title='Sync' id='app-sync'><span data-icon='sync'></span></a></li>
+				<li><a href='javascript:' title='Add Site' id='app-newentry'><span data-icon='new'></span></a></li>
+			</ul>
+		</div>
+		<div id='app-timer'></div>
+	</nav>
+
+	<main class='container container-nav' id='app'></main>
+
+	<div class='modal' id='sync-modal'>
+		<div class='modal-backdrop'></div>
+		<div class='modal-wrapper'>
+			<h2 class='modal-title-bar'>
+				<span id='sync-modal-title'>Modal Title</span>
+				<button class='modal-close'>&cross;</button>
+			</h2>
+			<div class='modal-body' id='sync-modal-body'>
+
+			</div>
+		</div>
+	</div>
+
+	<div class='modal' id='add-modal'>
+		<div class='modal-backdrop'></div>
+		<div class='modal-wrapper'>
+			<h2 class='modal-title-bar'>
+				Add new site
+				<button class='modal-close'>&cross;</button>
+			</h2>
+			<div class='modal-body' id='add-modal-body'>
+
+			</div>
+		</div>
+	</div>
+
+	<div id='message'>
+		<div class='container'>
+			<div id='message-inner'></div>
+		</div>
+	</div>
+
+	<script src='assets/js/jsSHA/src/sha.js'></script>
+	<script src='assets/js/totp.js'></script>
+	<script src='assets/js/storage.js'></script>
+	<script src='assets/js/app.js'></script>
+</body>
+</html>
