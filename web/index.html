@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 	<title>OTP Generator</title>
 	<meta charset='utf-8' />
@@ -38,14 +39,24 @@
 	<link rel='icon' type='image/svg+xml' sizes='128x128' href='/assets/img/icon/icon.svg'>
 	<link rel='apple-touch-icon' type='image/svg+xml' sizes='128x128' href='/assets/img/icon/icon.svg'>
 </head>
+
 <body>
 	<nav>
 		<div class='container'>
-			<h1 class='nav-brand'><span data-icon='logo'></span>OTP Gen</h1>
+			<h1 class='nav-brand'>
+				<span data-icon='logo'></span>OTP Gen</h1>
 			<ul class='nav-menu'>
 				<!-- <li><a href='javascript:' title='Remaining' id='app-remaining'></a></li> -->
-				<li><a href='javascript:' title='Sync' id='app-sync'><span data-icon='sync'></span></a></li>
-				<li><a href='javascript:' title='Add Site' id='app-newentry'><span data-icon='new'></span></a></li>
+				<li>
+					<a href='javascript:' title='Sync' id='app-sync'>
+						<span data-icon='sync'></span>
+					</a>
+				</li>
+				<li>
+					<a href='javascript:' title='Add Site' id='app-newentry'>
+						<span data-icon='new'></span>
+					</a>
+				</li>
 			</ul>
 		</div>
 		<div id='app-timer'></div>
@@ -58,7 +69,7 @@
 		<div class='modal-wrapper'>
 			<h2 class='modal-title-bar'>
 				<span id='sync-modal-title'>Modal Title</span>
-				<button class='modal-close'>&cross;</button>
+				<button class='modal-close'>&times;</button>
 			</h2>
 			<div class='modal-body' id='sync-modal-body'>
 
@@ -71,7 +82,7 @@
 		<div class='modal-wrapper'>
 			<h2 class='modal-title-bar'>
 				Add new site
-				<button class='modal-close'>&cross;</button>
+				<button class='modal-close'>&times;</button>
 			</h2>
 			<div class='modal-body' id='add-modal-body'>
 
@@ -90,4 +101,5 @@
 	<script src='assets/js/storage.js'></script>
 	<script src='assets/js/app.js'></script>
 </body>
+
 </html>

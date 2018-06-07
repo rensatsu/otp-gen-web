@@ -1,6 +1,8 @@
 const socketIO = require('socket.io');
 const colors = require('colors');
 
+const safeCb = cb => typeof cb === 'function' ? cb : _ => { };
+
 module.exports = function (server, config) {
 	const io = socketIO.listen(server);
 
@@ -128,16 +130,19 @@ module.exports = function (server, config) {
 
 
 	function describeRoom(name) {
-		var adapter = io.nsps['/'].adapter;
-		var clients = adapter.rooms[name] || {};
-		var result = {
+		const adapter = io.nsps['/'].adapter;
+		const clients = adapter.rooms[name] || {};
+
+		const result = {
 			clients: {},
 			length: 0
 		};
+
 		Object.keys(clients).forEach(function (id) {
 			result.clients[id] = adapter.nsp.connected[id];
 			result.length = result.length + 1;
 		});
+
 		return result;
 	}
 
@@ -146,11 +151,3 @@ module.exports = function (server, config) {
 	}
 
 };
-
-function safeCb(cb) {
-	if (typeof cb === 'function') {
-		return cb;
-	} else {
-		return _ => { };
-	}
-}
