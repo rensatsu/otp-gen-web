@@ -103,6 +103,10 @@
 			title: 'reporturi',
 			image: 'reporturi.svg',
 			match: ['report-uri', 'report uri']
+		},
+		{
+			title: 'namecheap',
+			image: 'namecheap.svg'
 		}
 	];
 
@@ -328,7 +332,7 @@
 			const remain = TOTPRemaining();
 			$('#app-timer').style.width = (remain * 100 / 30) + '%';
 
-			if (remain == 30) {
+			if (remain === 30) {
 				this.refresh();
 			}
 		},
