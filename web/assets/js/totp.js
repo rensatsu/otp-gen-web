@@ -42,7 +42,7 @@
 		let otp = '';
 
 		try {
-			const key = base32tohex(secret);
+			const key = base32tohex(secret.replace(/\s+/, '').toUpperCase());
 
 			const shaObj = new jsSHA("SHA-1", "HEX");
 			shaObj.setHMACKey(key, "HEX");

@@ -36,6 +36,7 @@ const offlineFundamentals = [
 	'assets/img/sites/rencloud.svg',
 	'assets/img/sites/reporturi.svg',
 	'assets/img/sites/namecheap.svg',
+	'assets/img/sites/gitlab.svg',
 	'assets/img/sync.svg',
 	'assets/js/storage.js',
 	'assets/js/app.js',

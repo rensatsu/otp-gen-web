@@ -107,6 +107,10 @@
 		{
 			title: 'namecheap',
 			image: 'namecheap.svg'
+		},
+		{
+			title: 'gitlab',
+			image: 'gitlab.svg'
 		}
 	];
 
@@ -699,8 +703,16 @@
 				};
 
 				for (let entry of entries.entries()) {
-					if (typeof Item[entry[0]] !== 'undefined') {
-						Item[entry[0]] = entry[1];
+					const key = entry[0];
+
+					if (typeof Item[key] !== 'undefined') {
+						let value = entry[1];
+
+						if (key === 'secret') {
+							value = value.replace(/\s+/, '').toUpperCase();
+						}
+
+						Item[key] = value;
 					}
 				}
 
