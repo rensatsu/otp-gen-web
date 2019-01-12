@@ -45,7 +45,6 @@ const offlineFundamentals = [
 	'assets/js/totp.js',
 	'assets/css/app.css',
 	'index.html',
-	'sw.js',
 	'manifest.json',
 	''
 ];
