@@ -2,7 +2,7 @@
     "name": "OTP Generator",
     "short_name": "OTP Gen",
     "lang": "en-US",
-    "start_url": "https://ren-otp.gitlab.io/",
+    "start_url": "https://ren-otp.gitlab.io/app/",
     "display": "standalone",
     "theme_color": "#0d47a1",
     "background_color": "#eeeeee",
