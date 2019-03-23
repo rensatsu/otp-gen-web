@@ -1,6 +1,8 @@
 ; (() => {
 	"use strict";
 
+	const IO_SERVER = "https://otp.rencloud.xyz";
+
 	const hasClassInPath = (className, path) => {
 		for (let i in path) {
 			if (typeof path[i].classList !== 'undefined') {
@@ -425,7 +427,7 @@
 			socket: false,
 
 			initiate: function () {
-				this.socket = io('https://otp.rencloud.xyz/');
+				this.socket = io(IO_SERVER);
 
 				this.socket.on('connect', _ => {
 					this.socket.emit('get-room', {}, data => {
@@ -492,7 +494,7 @@
 			socket: false,
 
 			openRoom: function (room) {
-				this.socket = io();
+				this.socket = io(IO_SERVER);
 
 				this.socket.on('connect', _ => {
 					this.socket.emit('check-room', { room: 'sync_' + room }, data => {
