@@ -743,7 +743,7 @@
 
 	if ('serviceWorker' in navigator) {
 		console.log('[ServiceWorker]', 'CLIENT: service worker registration in progress.');
-		navigator.serviceWorker.register('/sw.js').then(_ => {
+		navigator.serviceWorker.register('sw.js').then(_ => {
 			// Message.show('App can now be used in offline', 2000);
 			console.log('[ServiceWorker]', 'CLIENT: service worker registration complete.');
 		}, _ => {
