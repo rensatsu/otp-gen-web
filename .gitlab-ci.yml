@@ -3,7 +3,7 @@ image: alpine:latest
 pages:
   stage: deploy
   script:
-  - cat public/manifest.json | sed 's/otp\.rencloud\.xyz/rensatsu\.gitlab\.io\/otp\-generator/' > public/manifest.json
+  - cp manifest.json public/manifest.json
   artifacts:
     paths:
     - public
