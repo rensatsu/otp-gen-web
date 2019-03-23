@@ -1,7 +1,7 @@
 "use strict";
 
 console.log('[ServiceWorker]', 'WORKER: starting');
-const version = 'v34::';
+const version = 'v35::';
 
 const offlineFundamentals = [
 	'assets/scss/app.scss',
@@ -41,7 +41,7 @@ const offlineFundamentals = [
 	'assets/js/storage.js',
 	'assets/js/app.js',
 	'assets/js/socket.io.min.js',
-	'assets/js/jsSHA/src/sha.js',
+	'assets/js/jsOTP.min.js',
 	'assets/js/totp.js',
 	'assets/css/app.css',
 	'index.html',
