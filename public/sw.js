@@ -1,7 +1,7 @@
 "use strict";
 
 console.log('[ServiceWorker]', 'WORKER: starting');
-const version = 'v35::';
+const version = 'v36::';
 
 const offlineFundamentals = [
 	'assets/scss/app.scss',
