@@ -425,7 +425,7 @@
 			socket: false,
 
 			initiate: function () {
-				this.socket = io();
+				this.socket = io('https://otp.rencloud.xyz/');
 
 				this.socket.on('connect', _ => {
 					this.socket.emit('get-room', {}, data => {
