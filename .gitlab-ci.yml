@@ -1,7 +1,4 @@
 pages:
-  script:
-  - mkdir public
-  - cp -r web/* public
   artifacts:
     paths:
     - public
