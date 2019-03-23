@@ -225,8 +225,6 @@ form {
 	}
 
 	@media all and (min-width: $break-width) {
-		margin: 0 0 2rem 0;
-		box-shadow: 1px 1px 5px 1px rgba(#000, .2);
 		grid-template: 1fr / 128px 1fr;
 	}
 
