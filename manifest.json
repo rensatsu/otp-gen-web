@@ -2,7 +2,7 @@
     "name": "OTP Generator",
     "short_name": "OTP Gen",
     "lang": "en-US",
-    "start_url": "https://rensatsu.gitlab.io/otp-generator/",
+    "start_url": "https://ren-otp.gitlab.io/",
     "display": "standalone",
     "theme_color": "#0d47a1",
     "background_color": "#eeeeee",
