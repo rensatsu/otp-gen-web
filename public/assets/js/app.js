@@ -189,7 +189,8 @@
 	}
 
 	document.addEventListener('click', e => {
-		const cardElem = hasClassInPath('card', e.path);
+		const eventPath = e.path || (e.composedPath && e.composedPath());
+		const cardElem = hasClassInPath('card', eventPath);
 
 		if (typeof e.target.dataset.copy !== 'undefined') {
 			e.preventDefault();
@@ -224,7 +225,7 @@
 				cardElem.classList.remove('active');
 			}
 
-			if (!hasClassInPath('card-actions', e.path)) {
+			if (!hasClassInPath('card-actions', eventPath)) {
 				document.querySelectorAll('#app .card.active').forEach(elem => {
 					elem.classList.remove('active');
 				});
