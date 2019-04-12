@@ -1,8 +1,6 @@
 pages:
   image: node:11-alpine
   stage: deploy
-  before_script:
-  - node:11-alpine
   script:
   - npm install -g node-sass
   - sass public/scss/app.scss public/css/app.css
