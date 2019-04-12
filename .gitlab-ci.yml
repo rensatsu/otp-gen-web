@@ -3,8 +3,8 @@ pages:
   stage: deploy
   script:
   - npm install node-sass
-  - ./node_modules/node-sass/bin/node-sass public/scss/app.scss public/css/app.css
-  - ./node_modules/node-sass/bin/node-sass public/scss/app.scss public/css/app-test.css
+  - ./node_modules/node-sass/bin/node-sass public/assets/scss/app.scss public/assets/css/app.css
+  - ./node_modules/node-sass/bin/node-sass public/assets/scss/app.scss public/assets/css/app-test.css
   - cp manifest.json public/manifest.json
   artifacts:
     paths:
