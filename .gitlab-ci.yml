@@ -2,9 +2,9 @@ pages:
   image: node:11-alpine
   stage: deploy
   script:
-  - npm install -g node-sass
-  - sass public/scss/app.scss public/css/app.css
-  - sass public/scss/app.scss public/css/app-test.css
+  - npm install node-sass
+  - ./node_modules/node-sass/bin/node-sass public/scss/app.scss public/css/app.css
+  - ./node_modules/node-sass/bin/node-sass public/scss/app.scss public/css/app-test.css
   - cp manifest.json public/manifest.json
   artifacts:
     paths:
