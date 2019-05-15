@@ -96,7 +96,7 @@ self.addEventListener("fetch", event => {
 								}
 							);
 
-							return response || new Response('bb', { status: 503, statusText: 'Service unavailable' });
+							return response || new Response('Service unavailable', { status: 503, statusText: 'Service unavailable' });
 						}
 
 						const responseToCache = response.clone();
@@ -105,7 +105,7 @@ self.addEventListener("fetch", event => {
 								cache.put(event.request, responseToCache);
 							});
 
-						return response || new Response('aa', { status: 503, statusText: 'Service unavailable' });
+						return response || new Response('Service unavailable', { status: 503, statusText: 'Service unavailable' });
 					})
 					.catch(e => console.error(LOG_PREFIX, 'fetch failed', { event, request: event.request, e }));
 			})
