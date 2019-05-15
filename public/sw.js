@@ -1,7 +1,9 @@
 "use strict";
 
-console.log('[ServiceWorker]', 'WORKER: starting');
-const version = 'v37::';
+const CACHE_NAME = 'otp-gen-v5';
+const LOG_PREFIX = '[worker]';
+
+console.info(LOG_PREFIX, 'starting');
 
 const offlineFundamentals = [
 	'assets/scss/app.scss',
@@ -46,60 +48,81 @@ const offlineFundamentals = [
 	'assets/css/app.css',
 	'index.html',
 	'manifest.json',
-	''
+	'.'
 ];
 
-const ignoreCacheEvent = request => {
-	if (request.method !== 'GET') return true;
-	if (request.url.indexOf('/socket.io/') >= 0) return true;
-
-	return false;
-}
-
 self.addEventListener("install", event => {
-	console.info('[ServiceWorker]', 'WORKER: install event in progress.');
+	console.info(LOG_PREFIX, 'install event in progress.');
+	self.skipWaiting();
+
 	event.waitUntil(
 		caches
-			.open(version + 'assets')
+			.open(CACHE_NAME)
 			.then(cache => cache.addAll(offlineFundamentals))
-			.then(_ => console.log('[ServiceWorker]', 'WORKER: install completed'))
+			.then(_ => console.log(LOG_PREFIX, 'install completed'))
 	);
 });
 
 self.addEventListener("fetch", event => {
-	if (ignoreCacheEvent(event.request)) {
-		console.info(
-			'[ServiceWorker]',
-			'WORKER: fetch event ignored',
-			{ method: event.request.method, url: event.request.url }
-		);
-
-		return;
-	}
-
-	console.info('[ServiceWorker]', 'WORKER: fetch event', event.request.url, event);
+	if (event.request.method !== 'GET') return;
 
 	event.respondWith(
-		fetch(event.request).catch(function () {
-			return caches.match(event.request);
-		})
+		caches
+			.match(event.request)
+			.then(response => {
+				// cached
+				if (response) return response;
+
+				// online - internal
+				return fetch(event.request)
+					.then(response => {
+						// response validation
+						const validResponse = () => {
+							if (!response) return false;
+							if (response.status !== 200) return false;
+							if (response.type !== 'basic') return false;
+						};
+
+						if (validResponse()) {
+							console.log(
+								LOG_PREFIX,
+								'fetch validation failed',
+								{
+									response,
+									url: response.url,
+									status: response.status,
+									type: response.type,
+									request: event.request
+								}
+							);
+
+							return response || new Response('bb', { status: 503, statusText: 'Service unavailable' });
+						}
+
+						const responseToCache = response.clone();
+						caches.open(CACHE_NAME)
+							.then(cache => {
+								cache.put(event.request, responseToCache);
+							});
+
+						return response || new Response('aa', { status: 503, statusText: 'Service unavailable' });
+					})
+					.catch(e => console.error(LOG_PREFIX, 'fetch failed', { event, request: event.request, e }));
+			})
 	);
 });
 
 self.addEventListener("activate", event => {
-	console.log('[ServiceWorker]', 'WORKER: activate event in progress', event);
+	console.info(LOG_PREFIX, 'activate event in progress', event);
 
 	event.waitUntil(
 		caches
 			.keys()
 			.then(keys => Promise.all(
 				keys
-					.filter(key => !key.startsWith(version))
-					.map(key => {
-						console.warn('[ServiceWorker]', 'WORKER: Removing cache key', key);
-						return caches.delete(key);
-					})
+					.filter(key => key !== CACHE_NAME)
+					.map(key => caches.delete(key))
 			))
-			.then(_ => console.log('[ServiceWorker]', 'WORKER: activate completed'))
+			.then(_ => console.info(LOG_PREFIX, 'activate completed'))
 	);
 });

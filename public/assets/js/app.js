@@ -267,7 +267,7 @@
 					<p class='class-subtext'>%account%</p>
 					<p class='card-token'><span data-copy='' data-otp='%token%' data-otp-inner='true'>%token-show%</span></p>
 				</div>
-				
+
 				<div class='card-actions'>
 					<button type='button' data-copy='' data-otp='%token%'>Copy</button>
 					<button type='button' class='button-danger' data-delete='%id%'>Delete</button>
@@ -745,9 +745,32 @@
 	});
 
 	if ('serviceWorker' in navigator) {
-		navigator.serviceWorker.register('sw.js').then(_ => {
-			// Message.show('App can now be used in offline', 2000);
+		navigator.serviceWorker.register('sw.js').then(reg => {
 			console.log('[ServiceWorker]', 'CLIENT: service worker registration complete.');
+
+			reg.addEventListener('updatefound', () => {
+				const installingWorker = reg.installing;
+
+				installingWorker.addEventListener('statechange', () => {
+					switch (installingWorker.state) {
+						case 'installed':
+							if (navigator.serviceWorker.controller) {
+								Message.show("🔄 App update available, please reload page");
+								console.info('[worker]', 'new or updated content is available');
+							} else {
+								console.info('[worker]', 'content is now available offline');
+							}
+							break;
+
+						case 'waiting':
+							console.log('[worker]', 'waiting state');
+							break;
+						case 'redundant':
+							console.error('[worker]', 'the installing service worker became redundant');
+							break;
+					}
+				});
+			});
 		}, _ => {
 			console.log('[ServiceWorker]', 'CLIENT: service worker registration failure.');
 		});
