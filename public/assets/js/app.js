@@ -113,7 +113,11 @@
 		{
 			title: 'gitlab',
 			image: 'gitlab.svg'
-		}
+		},
+		{
+			title: 'paypal',
+			image: 'paypal.svg'
+		},
 	];
 
 	const getImageForItem = item => {

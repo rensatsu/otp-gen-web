@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME = 'otp-gen-v5';
+const CACHE_NAME = 'otp-gen-v6';
 const LOG_PREFIX = '[worker]';
 
 console.info(LOG_PREFIX, 'starting');
@@ -39,6 +39,7 @@ const offlineFundamentals = [
 	'assets/img/sites/reporturi.svg',
 	'assets/img/sites/namecheap.svg',
 	'assets/img/sites/gitlab.svg',
+	'assets/img/sites/paypal.svg',
 	'assets/img/sync.svg',
 	'assets/js/storage.js',
 	'assets/js/app.js',
