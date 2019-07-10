@@ -118,6 +118,11 @@
 			title: 'paypal',
 			image: 'paypal.svg'
 		},
+		{
+			title: 'firefox',
+			image: 'firefox.svg',
+			match: ['mozilla']
+		},
 	];
 
 	const getImageForItem = item => {
