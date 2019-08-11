@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME = 'otp-gen-v7';
+const CACHE_NAME = 'otp-gen-v8';
 const LOG_PREFIX = '[worker]';
 
 console.info(LOG_PREFIX, 'starting');
@@ -44,7 +44,7 @@ const offlineFundamentals = [
 	'assets/js/storage.js',
 	'assets/js/app.js',
 	'assets/js/socket.io.min.js',
-	'assets/js/jsOTP.min.js',
+	'assets/js/wc-otp.js',
 	'assets/js/totp.js',
 	'assets/css/app.css',
 	'index.html',

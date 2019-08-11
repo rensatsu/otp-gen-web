@@ -1,4 +1,4 @@
-; (() => {
+; (async () => {
 	"use strict";
 
 	const TOTPRemaining = _ => {
@@ -6,11 +6,12 @@
 		return 30 - (epoch % 30);
 	}
 
-	const TOTP = secret => {
+	const TOTP = async (secret) => {
 		try {
-			const totpGenerator = new jsOTP.totp();
-			return totpGenerator.getOtp(secret);
+			const totpGenerator = new TOTPGenerator();
+			return await totpGenerator.getOtp(secret);
 		} catch (e) {
+			console.warn(e);
 			return 'N/A';
 		}
 	}

@@ -123,6 +123,10 @@
 			image: 'firefox.svg',
 			match: ['mozilla']
 		},
+		{
+			title: 'amazon',
+			image: 'amazon.svg'
+		},
 	];
 
 	const getImageForItem = item => {
@@ -308,11 +312,11 @@
 			if (this.secrets.length > 0) {
 				$('#app').innerHTML = '';
 
-				this.secrets.forEach((item, id) => {
+				this.secrets.forEach(async (item, id) => {
 					const card = document.createElement('div');
 					card.classList.add('card');
 					card.dataset.secret = item.secret;
-					const token = TOTP(item.secret);
+					const token = await TOTP(item.secret);
 					const image = getImageForItem(item);
 
 					card.innerHTML = this.templates.card
@@ -354,8 +358,8 @@
 		},
 
 		refresh: function () {
-			this.cardElements.forEach(card => {
-				const token = TOTP(card.dataset.secret);
+			this.cardElements.forEach(async (card) => {
+				const token = await TOTP(card.dataset.secret);
 				card.querySelectorAll('[data-otp]').forEach(oel => {
 					oel.dataset.otp = token;
 					if (typeof oel.dataset.copy !== 'undefined') {
