@@ -187,7 +187,6 @@
 	}
 
 	const copyText = text => {
-		console.log('copying', text);
 		const tempElem = document.createElement('input');
 		tempElem.value = text;
 		tempElem.style.opacity = 0;
@@ -230,24 +229,6 @@
 
 			return true;
 		}
-
-		if (cardElem) {
-			e.preventDefault();
-
-			if (typeof e.target.dataset.cancel !== 'undefined') {
-				cardElem.classList.remove('active');
-			}
-
-			if (!hasClassInPath('card-actions', eventPath)) {
-				document.querySelectorAll('#app .card.active').forEach(elem => {
-					elem.classList.remove('active');
-				});
-
-				cardElem.classList.toggle('active');
-			} else {
-				cardElem.classList.remove('active');
-			}
-		}
 	});
 
 	const IconFont = {
@@ -275,17 +256,14 @@
 					<img src='%icon%' alt='%title%' />
 				</div>
 
-				<div class='card-content'>
-					<h2>%title%</h2>
-					<p class='class-subtext'>%account%</p>
-					<p class='card-token'><span data-copy='' data-otp='%token%' data-otp-inner='true'>%token-show%</span></p>
-				</div>
-
-				<div class='card-actions'>
-					<button type='button' data-copy='' data-otp='%token%'>Copy</button>
-					<button type='button' class='button-danger' data-delete='%id%'>Delete</button>
-					<button type='button' data-cancel='cancel'>Cancel</button>
-				</div>
+				<h2>%title%</h2>
+				<button type='button' class='button-del-float' data-delete='%id%' title='Delete'>&times;</button>
+				<p class='class-subtext'>%account%</p>
+				<p class='card-token'>
+					<span data-copy='' data-otp='%token%' data-otp-inner='true'>
+						%token-show%
+					</span>
+				</p>
 			`,
 
 			empty: `
@@ -465,7 +443,7 @@
 
 				this.socket.on('handle-verification', data => {
 					console.log('[Socket.IO]', 'handle-verification', data);
-					// let response = confirm(`Is your other device shows the code <b>${data.code}</b>?`);
+
 					$('#sync-tab-export-status').innerHTML = `
 						<div class='sync-prompt'>
 							Is your other device shows the code <b>${data.code}</b>?
