@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME = 'otp-gen-v8';
+const CACHE_NAME = 'otp-gen-v9';
 const LOG_PREFIX = '[worker]';
 
 console.info(LOG_PREFIX, 'starting');
