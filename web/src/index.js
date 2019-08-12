@@ -32,11 +32,10 @@ const $ = sel => {
 	}
 }
 
-const Sites = require('./js/sites-list.js');
+import websiteList from './js/websites-list.js';
 
 const getImageForItem = item => {
-	for (let i in Sites) {
-		const site = Sites[i];
+	for (let site of websiteList()) {
 		if (item.title.toLowerCase().indexOf(site.title) !== -1) {
 			return `./img/sites/${site.image}`;
 		}
