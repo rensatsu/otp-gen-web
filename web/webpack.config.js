@@ -43,8 +43,6 @@ module.exports = env => {
                             loader: MiniCssExtractPlugin.loader,
                             options: {
                                 hmr: !IS_PROD,
-                                filename: IS_PROD ? '[name].[hash].css' : '[name].css',
-                                chunkFilename: IS_PROD ? '[id].[hash].css' : '[id].css',
                             },
                         },
                         'css-loader', // translates CSS into CommonJS
@@ -103,8 +101,8 @@ module.exports = env => {
                 { from: path.resolve('./_headers'), to: TARGET_PATH },
             ]),
             new MiniCssExtractPlugin({
-                filename: '[name].css',
-                chunkFilename: '[id].css',
+                filename: IS_PROD ? '[name].[hash].css' : '[name].css',
+                chunkFilename: IS_PROD ? '[id].[hash].css' : '[id].css',
                 ignoreOrder: false, // Enable to remove warnings about conflicting order
             }),
         ],
