@@ -37,6 +37,15 @@ module.exports = env => {
                     test: /\.scss$/,
                     use: [
                         { loader: 'style-loader', options: { injectType: 'linkTag' } }, // creates style nodes from JS strings
+                        {
+                            loader: MiniCssExtractPlugin.loader,
+                            options: {
+                                // you can specify a publicPath here
+                                // by default it uses publicPath in webpackOptions.output
+                                // publicPath: '../',
+                                hmr: !IS_PROD,
+                            },
+                        },
                         'css-loader', // translates CSS into CommonJS
                         'sass-loader', // compiles Sass to CSS, using Node Sass by default
                     ],
@@ -92,6 +101,11 @@ module.exports = env => {
             new CopyPlugin([
                 { from: path.resolve('./_headers'), to: TARGET_PATH },
             ]),
+            new MiniCssExtractPlugin({
+                filename: '[name].css',
+                chunkFilename: '[id].css',
+                ignoreOrder: false, // Enable to remove warnings about conflicting order
+            }),
         ],
     };
 
