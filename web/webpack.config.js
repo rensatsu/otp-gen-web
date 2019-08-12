@@ -36,7 +36,7 @@ module.exports = env => {
                 {
                     test: /\.scss$/,
                     use: [
-                        { loader: 'style-loader', options: { injectType: 'styleTag' } }, // creates style nodes from JS strings
+                        { loader: 'style-loader', options: { injectType: 'linkTag' } }, // creates style nodes from JS strings
                         'css-loader', // translates CSS into CommonJS
                         'sass-loader', // compiles Sass to CSS, using Node Sass by default
                     ],
