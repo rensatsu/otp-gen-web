@@ -37,7 +37,7 @@ module.exports = env => {
                 {
                     test: /\.scss$/,
                     use: [
-                        { loader: 'style-loader', options: { injectType: 'linkTag' } }, // creates style nodes from JS strings
+                        // { loader: 'style-loader', options: { injectType: 'linkTag' } }, // creates style nodes from JS strings
                         {
                             loader: MiniCssExtractPlugin.loader,
                             options: {
@@ -45,6 +45,8 @@ module.exports = env => {
                                 // by default it uses publicPath in webpackOptions.output
                                 // publicPath: '../',
                                 hmr: !IS_PROD,
+                                filename: '[name]-[contenthash].css',
+                                chunkFilename: '[id].css',
                             },
                         },
                         'css-loader', // translates CSS into CommonJS
