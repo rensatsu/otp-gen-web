@@ -1,5 +1,5 @@
 /*
-    # content-security-policy: default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; connect-src 'self' wss://otp.rencloud.xyz
+    content-security-policy: default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; connect-src 'self' wss://otp.rencloud.xyz
     strict-transport-security: max-age=31536000;
     x-content-type-options: nosniff
     x-xss-protection: 1; mode=block

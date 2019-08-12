@@ -13,7 +13,7 @@ module.exports = env => {
     const APP_URL = IS_PROD ? 'https://ren-otp.gitlab.io/app/' : 'https://otp.rencloud.xyz';
     const TARGET_PATH = path.resolve(__dirname, 'dist');
 
-    return {
+    const webpackParams = {
         entry: './src/index.js',
         mode: IS_PROD ? 'production' : 'development',
         output: {
@@ -26,7 +26,6 @@ module.exports = env => {
             },
             usedExports: true,
         },
-        devtool: IS_PROD ? false : 'inline-source-map',
         devServer: {
             contentBase: path.join(__dirname, 'dist'),
             compress: true,
@@ -95,4 +94,10 @@ module.exports = env => {
             ]),
         ],
     };
+
+    if (!IS_PROD) {
+        webpackParams.devtool = 'inline-source-map';
+    }
+
+    return webpackParams;
 };
