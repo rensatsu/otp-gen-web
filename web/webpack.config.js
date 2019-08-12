@@ -13,12 +13,18 @@ module.exports = env => {
 
     return {
         entry: './src/index.js',
-        mode: env.production ? 'production' : 'development',
+        mode: IS_PROD ? 'production' : 'development',
         output: {
             filename: 'app.js',
             path: path.resolve(__dirname, 'dist')
         },
-        devtool: 'inline-source-map',
+        optimization: {
+            splitChunks: {
+                chunks: 'all'
+            },
+            usedExports: true,
+        },
+        devtool: IS_PROD ? false : 'inline-source-map',
         devServer: {
             contentBase: path.join(__dirname, 'dist'),
             compress: true,
@@ -54,7 +60,8 @@ module.exports = env => {
             }),
             new WorkboxPlugin.GenerateSW({
                 clientsClaim: true,
-                skipWaiting: true
+                skipWaiting: true,
+                importWorkboxFrom: 'local',
             }),
             new WebpackPwaManifest({
                 name: APP_NAME,
