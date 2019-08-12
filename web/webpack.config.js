@@ -14,6 +14,8 @@ module.exports = env => {
     const APP_URL = IS_PROD ? 'https://ren-otp.gitlab.io/app/' : 'https://otp.rencloud.xyz';
     const TARGET_PATH = path.resolve(__dirname, 'dist');
 
+    console.info('Building', APP_NAME, 'on', IS_PROD ? 'prod' : 'dev');
+
     const webpackParams = {
         entry: './src/index.js',
         mode: IS_PROD ? 'production' : 'development',
@@ -37,13 +39,9 @@ module.exports = env => {
                 {
                     test: /\.scss$/,
                     use: [
-                        // { loader: 'style-loader', options: { injectType: 'linkTag' } }, // creates style nodes from JS strings
                         {
                             loader: MiniCssExtractPlugin.loader,
                             options: {
-                                // you can specify a publicPath here
-                                // by default it uses publicPath in webpackOptions.output
-                                // publicPath: '../',
                                 hmr: !IS_PROD,
                                 filename: IS_PROD ? '[name].[hash].css' : '[name].css',
                                 chunkFilename: IS_PROD ? '[id].[hash].css' : '[id].css',
