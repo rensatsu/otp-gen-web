@@ -3,6 +3,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = env => {
     const IS_PROD = 'production' in env && env.production;
@@ -10,13 +11,14 @@ module.exports = env => {
     const APP_NAME = 'OTP Generator';
     const APP_SHORT_NAME = 'OTP Gen';
     const APP_URL = IS_PROD ? 'https://ren-otp.gitlab.io/app/' : 'https://otp.rencloud.xyz';
+    const TARGET_PATH = path.resolve(__dirname, 'dist');
 
     return {
         entry: './src/index.js',
         mode: IS_PROD ? 'production' : 'development',
         output: {
             filename: 'app.js',
-            path: path.resolve(__dirname, 'dist')
+            path: TARGET_PATH
         },
         optimization: {
             splitChunks: {
@@ -50,7 +52,7 @@ module.exports = env => {
         },
         plugins: [
             new CleanWebpackPlugin({
-                cleanOnceBeforeBuildPatterns: ['**/*', '!index.html', '!index.dev.html'],
+                cleanOnceBeforeBuildPatterns: ['**/*'],
             }),
             new HtmlWebpackPlugin({
                 title: APP_NAME,
@@ -88,6 +90,9 @@ module.exports = env => {
                     }
                 ]
             }),
+            new CopyPlugin([
+                { from: path.resolve('./_headers'), to: TARGET_PATH },
+            ]),
         ],
     };
 };
