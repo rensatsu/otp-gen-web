@@ -4,6 +4,7 @@ const WorkboxPlugin = require('workbox-webpack-plugin');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = env => {
     const IS_PROD = 'production' in env && env.production;
@@ -12,6 +13,8 @@ module.exports = env => {
     const APP_SHORT_NAME = 'OTP Gen';
     const APP_URL = IS_PROD ? 'https://ren-otp.gitlab.io/app/' : 'https://otp.rencloud.xyz';
     const TARGET_PATH = path.resolve(__dirname, 'dist');
+
+    console.info('Building', APP_NAME, 'on', IS_PROD ? 'prod' : 'dev');
 
     const webpackParams = {
         entry: './src/index.js',
@@ -36,7 +39,12 @@ module.exports = env => {
                 {
                     test: /\.scss$/,
                     use: [
-                        'style-loader', // creates style nodes from JS strings
+                        {
+                            loader: MiniCssExtractPlugin.loader,
+                            options: {
+                                hmr: !IS_PROD,
+                            },
+                        },
                         'css-loader', // translates CSS into CommonJS
                         'sass-loader', // compiles Sass to CSS, using Node Sass by default
                     ],
@@ -92,6 +100,11 @@ module.exports = env => {
             new CopyPlugin([
                 { from: path.resolve('./_headers'), to: TARGET_PATH },
             ]),
+            new MiniCssExtractPlugin({
+                filename: IS_PROD ? '[name].[hash].css' : '[name].css',
+                chunkFilename: IS_PROD ? '[id].[hash].css' : '[id].css',
+                ignoreOrder: false, // Enable to remove warnings about conflicting order
+            }),
         ],
     };
 
