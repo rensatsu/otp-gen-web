@@ -6,7 +6,7 @@
  * * https://github.com/diafygi/webcrypto-examples/
  */
 
-class WCTOTP {
+export default class WCTOTP {
 	constructor(expiry = 30, length = 6) {
 		this.expiry = expiry;
 		this.length = length;
@@ -113,5 +113,3 @@ class WCTOTP {
 	}
 
 }
-
-module.exports = WCTOTP;

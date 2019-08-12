@@ -1,8 +1,8 @@
 "use strict";
 
-const Storage = require('./js/storage.js');
-const io = require('socket.io-client');
-const { TOTP, TOTPRemaining } = require('./js/totp.js');
+import Storage from './js/storage.js';
+import io from 'socket.io-client';
+import { TOTP, TOTPRemaining } from './js/totp.js';
 import './scss/app.scss';
 
 const IO_SERVER = "https://otp.rencloud.xyz";
@@ -193,6 +193,7 @@ const App = {
 	},
 
 	render: function () {
+		console.trace('App.render');
 		this.secrets = this.getSecrets();
 		this.cardElements = [];
 

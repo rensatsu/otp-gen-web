@@ -49,7 +49,7 @@ module.exports = env => {
             new HtmlWebpackPlugin({
                 title: APP_NAME,
                 short_name: APP_SHORT_NAME,
-                template: './dist/index.html',
+                template: './index.html',
                 favicon: path.resolve('./src/img/icon/icon.png'),
             }),
             new WorkboxPlugin.GenerateSW({

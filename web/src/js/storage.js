@@ -1,6 +1,6 @@
 "use strict";
 
-class Storage {
+export default class Storage {
 	constructor(prefix = '') {
 		this.prefix = prefix + '_';
 	}
@@ -17,5 +17,3 @@ class Storage {
 		return localStorage.removeItem(this.prefix + key);
 	}
 }
-
-module.exports = Storage;

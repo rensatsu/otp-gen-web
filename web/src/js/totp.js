@@ -1,12 +1,12 @@
 "use strict";
-const WCTOTP = require('./wc-totp.js');
+import WCTOTP from './wc-totp.js';
 
-const TOTPRemaining = _ => {
+export const TOTPRemaining = _ => {
 	const epoch = Math.round(new Date().getTime() / 1000.0);
 	return 30 - (epoch % 30);
 }
 
-const TOTP = async (secret) => {
+export const TOTP = async (secret) => {
 	try {
 		const totpGenerator = new WCTOTP();
 		return await totpGenerator.getOtp(secret);
@@ -15,8 +15,3 @@ const TOTP = async (secret) => {
 		return 'N/A';
 	}
 }
-
-module.exports = {
-	TOTP,
-	TOTPRemaining
-};
