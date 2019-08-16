@@ -99,5 +99,10 @@ export default () => {
             title: 'amazon',
             image: 'amazon.svg'
         },
+        {
+            title: 'epic-games',
+            image: 'epic-games.svg',
+            match: ['epic store', 'epic games', 'fortnite']
+        },
     ];
 }
