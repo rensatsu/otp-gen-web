@@ -1,6 +1,4 @@
 node_modules
-signal/node_modules
-web/node_modules
-web/dist
-web/.cache
+dist
+.cache
 public
