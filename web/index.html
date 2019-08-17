@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title><%= htmlWebpackPlugin.options.title %></title>
+	<meta charset='utf-8' />
+	<meta name='viewport' content='width=device-width, initial-scale=1'>
+</head>
+
+<body>
+	<nav>
+		<div class='container'>
+			<h1 class='nav-brand'>
+				<span data-icon='logo'></span><%= htmlWebpackPlugin.options.short_name %>
+			</h1>
+			<ul class='nav-menu'>
+				<li>
+					<a href='#' title='Sync' id='app-sync'>
+						<span data-icon='sync'></span>
+					</a>
+				</li>
+				<li>
+					<a href='#' title='Add Site' id='app-newentry'>
+						<span data-icon='new'></span>
+					</a>
+				</li>
+			</ul>
+		</div>
+		<div id='app-timer'></div>
+	</nav>
+
+	<main class='container container-nav' id='app'></main>
+
+	<div class='modal' id='sync-modal'>
+		<div class='modal-backdrop'></div>
+		<div class='modal-wrapper'>
+			<h2 class='modal-title-bar'>
+				<span id='sync-modal-title'>Modal Title</span>
+				<button class='modal-close'>&times;</button>
+			</h2>
+			<div class='modal-body' id='sync-modal-body'>
+
+			</div>
+		</div>
+	</div>
+
+	<div class='modal' id='add-modal'>
+		<div class='modal-backdrop'></div>
+		<div class='modal-wrapper'>
+			<h2 class='modal-title-bar'>
+				Add new site
+				<button class='modal-close'>&times;</button>
+			</h2>
+			<div class='modal-body' id='add-modal-body'>
+
+			</div>
+		</div>
+	</div>
+
+	<div id='message'>
+		<div class='container'>
+			<div id='message-inner'></div>
+		</div>
+	</div>
+</body>
+
+</html>
