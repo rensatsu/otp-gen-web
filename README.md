@@ -30,3 +30,8 @@ These commands will start a local development server.
 npm install --only=dev
 npm start
 ```
+
+## Server
+
+Sync server's source code is availale
+in a separate [repository](https://github.com/rensatsu/otp-gen-server).
