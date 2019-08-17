@@ -11,7 +11,7 @@ module.exports = env => {
 
     const APP_NAME = 'OTP Generator';
     const APP_SHORT_NAME = 'OTP Gen';
-    const APP_URL = IS_PROD ? 'https://ren-otp.gitlab.io/app/' : 'https://otp.rencloud.xyz';
+    const APP_URL = IS_PROD ? 'https://ren-otp.netlify.com/' : 'https://otp.rencloud.xyz';
     const TARGET_PATH = path.resolve(__dirname, 'dist');
 
     console.info('Building', APP_NAME, 'on', IS_PROD ? 'prod' : 'dev');
