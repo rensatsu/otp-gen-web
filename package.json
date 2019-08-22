@@ -4,9 +4,7 @@
   "description": "RenCloud TOTP Generator (web)",
   "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "webpack --watch --env.development",
-    "start": "webpack-dev-server --env.development",
+    "watch": "webpack-dev-server --env.development",
     "build": "webpack --env.production"
   },
   "repository": {

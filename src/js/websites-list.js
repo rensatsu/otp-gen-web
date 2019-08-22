@@ -104,5 +104,13 @@ export default () => {
             image: 'epic-games.svg',
             match: ['epic store', 'epic games', 'fortnite']
         },
+        {
+            title: 'humble',
+            image: 'humble.svg'
+        },
+        {
+            title: 'mega',
+            image: 'mega.svg'
+        },
     ];
 }
