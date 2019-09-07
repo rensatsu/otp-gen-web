@@ -112,5 +112,10 @@ export default () => {
             title: 'mega',
             image: 'mega.svg'
         },
+        {
+            title: 'electronic-arts',
+            image: 'ea.svg',
+            match: ['electronic arts', 'ea games', 'origin']
+        },
     ];
 }
