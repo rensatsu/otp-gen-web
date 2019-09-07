@@ -117,5 +117,9 @@ export default () => {
             image: 'electronic-arts.svg',
             match: ['electronic arts', 'ea games', 'origin']
         },
+        {
+            title: 'mixer',
+            image: 'mixer.svg'
+        },
     ];
 }
