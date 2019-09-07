@@ -121,5 +121,9 @@ export default () => {
             title: 'mixer',
             image: 'mixer.svg'
         },
+        {
+            title: 'trello',
+            image: 'trello.svg'
+        },
     ];
 }
