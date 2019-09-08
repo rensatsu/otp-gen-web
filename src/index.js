@@ -9,7 +9,7 @@ const IO_SERVER = "https://otp.rencloud.xyz";
 const LS = new Storage('otp');
 
 const SWIPE_THRESHOLD = 0.15;
-const SWIPE_SUCCESS_THRESHOLD = 0.3;
+const SWIPE_SUCCESS_THRESHOLD = 0.35;
 
 const hasClassInPath = (className, path) => {
 	for (let i in path) {
@@ -123,8 +123,12 @@ const deleteAccount = (id) => {
 	return false;
 };
 
+const getScreenThresholdValue = (threshold) => {
+	return threshold * screen.availWidth;
+};
+
 const checkScreenThreshold = (x, threshold) => {
-	return x > threshold * screen.availWidth;
+	return x > getScreenThresholdValue(threshold);
 };
 
 document.addEventListener('click', e => {
@@ -251,7 +255,9 @@ const App = {
 						return;
 					}
 
-					card.style.setProperty('--card-swipe-x', `${delta}px`);
+					const offset = getScreenThresholdValue(SWIPE_THRESHOLD);
+
+					card.style.setProperty('--card-swipe-x', `${delta - offset}px`);
 				});
 
 				card.addEventListener('touchend', e => {
@@ -557,8 +563,9 @@ const Sync = {
 			</div>
 
 			<div id='sync-tab-debug'>
-				<p><button class='button-danger' id='sync-debug-clear'>Clear all secrets</button></p>
-				<p><button class='button-danger' id='sync-debug-demo'>Clear -> Demo mode</button></p>
+				<p class='note-danger'>WARNING: Using buttons below will DELETE ALL YOUR ACCOUNTS!</p>
+				<p><button class='button-danger' id='sync-debug-clear'>Delete all accounts</button></p>
+				<p><button class='button-danger' id='sync-debug-demo'>Delete all and enable demo mode</button></p>
 			</div>
 		`;
 
@@ -575,16 +582,37 @@ const Sync = {
 			e.preventDefault();
 			if (confirm("Do you really want to clear ALL DATA?")) {
 				LS.del('accounts');
-				const demo = JSON.stringify([{
-					"title": "Dropbox",
-					"secret": "AAAAA",
-					"account": "test"
-				},
-				{
-					"title": "Some Unsopported Application",
-					"secret": "BBBBB",
-					"account": "unsupported@gmail.com"
-				}]);
+
+				const demoList = [];
+
+				const randomToken = (length = 5) => {
+					const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'.split('');
+
+					return (new Array(length))
+						.fill(null)
+						.map(() => letters[Math.floor(Math.random() * letters.length)])
+						.join('');
+				};
+
+				websiteList().forEach(site => {
+					const title = site.title.substring(0, 1).toLocaleUpperCase() +
+						site.title.substring(1);
+
+					demoList.push({
+						title: title,
+						secret: randomToken(10),
+						account: "username@example.org"
+					});
+				});
+
+				demoList.push({
+					title: "Some Unsopported Application",
+					secret: "BBBBB",
+					account: "unsupported@example.org"
+				})
+
+				const demo = JSON.stringify(demoList);
+
 				LS.set('accounts', demo);
 				App.render();
 				Sync.close();
@@ -713,7 +741,7 @@ document.addEventListener('DOMContentLoaded', e => {
 
 if ('serviceWorker' in navigator) {
 	navigator.serviceWorker.register('service-worker.js').then(reg => {
-		console.log('[ServiceWorker]', 'CLIENT: service worker registration complete.');
+		console.log('[worker]', 'CLIENT: service worker registration complete.');
 
 		reg.addEventListener('updatefound', () => {
 			const installingWorker = reg.installing;

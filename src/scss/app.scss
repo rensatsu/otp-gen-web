@@ -417,7 +417,10 @@ form {
 }
 
 #sync-modal {
-	.alpha-disclaimer, .alpha-disclaimer a {
+	.alpha-disclaimer,
+	.alpha-disclaimer a,
+	.note-danger
+	{
 		color: mix(#fff, $color-danger, 20%);
 	}
 
