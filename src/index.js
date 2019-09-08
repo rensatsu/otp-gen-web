@@ -8,8 +8,8 @@ import './scss/app.scss';
 const IO_SERVER = "https://otp.rencloud.xyz";
 const LS = new Storage('otp');
 
-const SWIPE_THRESHOLD = 100;
-const SWIPE_SUCCESS_THRESHOLD = 250;
+const SWIPE_THRESHOLD = 0.15;
+const SWIPE_SUCCESS_THRESHOLD = 0.3;
 
 const hasClassInPath = (className, path) => {
 	for (let i in path) {
@@ -123,6 +123,10 @@ const deleteAccount = (id) => {
 	return false;
 };
 
+const checkScreenThreshold = (x, threshold) => {
+	return x > threshold * screen.availWidth;
+};
+
 document.addEventListener('click', e => {
 	const eventPath = e.path || (e.composedPath && e.composedPath());
 	const cardElem = hasClassInPath('card', eventPath);
@@ -217,8 +221,6 @@ const App = {
 				});
 
 				card.addEventListener('touchstart', e => {
-					e.preventDefault();
-
 					if (!('changedTouches' in e) || e.changedTouches.length === 0) {
 						return;
 					}
@@ -236,8 +238,6 @@ const App = {
 						return;
 					}
 
-					e.preventDefault();
-
 					const origX = parseFloat(card.dataset.swipeStartX);
 					const currX = parseFloat(e.changedTouches[0].clientX);
 
@@ -247,16 +247,14 @@ const App = {
 						return;
 					}
 
-					if (delta < SWIPE_THRESHOLD) {
+					if (!checkScreenThreshold(delta, SWIPE_THRESHOLD)) {
 						return;
 					}
 
-					card.style.setProperty('--card-swipe-x', `${delta - SWIPE_THRESHOLD}px`);
+					card.style.setProperty('--card-swipe-x', `${delta}px`);
 				});
 
 				card.addEventListener('touchend', e => {
-					e.preventDefault();
-
 					let isSuccess = false;
 
 					const origX = parseFloat(card.dataset.swipeStartX);
@@ -266,9 +264,9 @@ const App = {
 
 					if (delta < 0) {
 						isSuccess = false;
-					} else if (delta < SWIPE_THRESHOLD) {
+					} else if (!checkScreenThreshold(delta, SWIPE_THRESHOLD)) {
 						isSuccess = false;
-					} else if (delta < SWIPE_SUCCESS_THRESHOLD) {
+					} else if (!checkScreenThreshold(delta, SWIPE_SUCCESS_THRESHOLD)) {
 						isSuccess = false;
 					} else {
 						isSuccess = true;
