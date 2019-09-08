@@ -563,7 +563,7 @@ const Sync = {
 			</div>
 
 			<div id='sync-tab-debug'>
-				<p class='note-danger'>WARNING: Using buttons below will DELETE ALL YOUR ACCOUNTS!</p>
+				<p class='note-danger'>WARNING: Using any of the buttons below will DELETE ALL YOUR ACCOUNTS!</p>
 				<p><button class='button-danger' id='sync-debug-clear'>Delete all accounts</button></p>
 				<p><button class='button-danger' id='sync-debug-demo'>Delete all and enable demo mode</button></p>
 			</div>
