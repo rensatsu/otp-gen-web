@@ -90,6 +90,7 @@ button {
 	max-width: 95%;
 	width: $break-width;
 	margin: 0 auto;
+	overflow: hidden;
 
 	&.container-nav {
 		margin-top: ($nav-height + $nav-height/2);
@@ -207,15 +208,18 @@ form {
 }
 
 .card {
+	--card-swipe-x: 0px;
+
 	background-color: #fff;
 	padding: .2rem;
 	border: 1px solid rgba(#000, .2);
 	border-bottom-width: 0;
 	height: 100%;
-	transition: .1s border-color, .3s height;
+	transition: .1s border-color, .3s height, .05s transform;
 	@include no-select;
 	position: relative;
 	-webkit-tap-highlight-color: rgba(#fff, 0);
+	transform: translate(var(--card-swipe-x), 0);
 
 	display: grid;
 	grid-template-columns: 64px 1fr 32px;
@@ -303,13 +307,14 @@ form {
 		transition: .1s color, .1s background-color, .1s opacity;
 		padding: 0;
 		border-radius: 50%;
-		display: flex;
+		display: none;
 		justify-content: center;
 		align-items: center;
 		text-shadow: none;
 
 		@media (hover: hover) and (pointer: fine) {
 			opacity: 0;
+			display: flex;
 		}
 
 		&:hover {

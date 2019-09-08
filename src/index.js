@@ -8,6 +8,9 @@ import './scss/app.scss';
 const IO_SERVER = "https://otp.rencloud.xyz";
 const LS = new Storage('otp');
 
+const SWIPE_THRESHOLD = 100;
+const SWIPE_SUCCESS_THRESHOLD = 400;
+
 const hasClassInPath = (className, path) => {
 	for (let i in path) {
 		if (typeof path[i].classList !== 'undefined') {
@@ -108,6 +111,18 @@ const copyText = text => {
 	Message.show("✅ Text copied", 2000);
 }
 
+const deleteAccount = (id) => {
+	if (confirm("Do you really want to delete this account?")) {
+		App.secrets.splice(id, 1);
+		LS.set('accounts', JSON.stringify(App.secrets));
+		App.render();
+
+		return true;
+	}
+
+	return false;
+};
+
 document.addEventListener('click', e => {
 	const eventPath = e.path || (e.composedPath && e.composedPath());
 	const cardElem = hasClassInPath('card', eventPath);
@@ -125,15 +140,7 @@ document.addEventListener('click', e => {
 	if (typeof e.target.dataset.delete !== 'undefined') {
 		e.preventDefault();
 
-		if (confirm("Do you really want to delete this account?")) {
-			App.secrets.splice(e.target.dataset.delete, 1);
-			LS.set('accounts', JSON.stringify(App.secrets));
-			App.render();
-
-			if (cardElem) {
-				cardElem.classList.remove('active');
-			}
-		}
+		deleteAccount(e.target.dataset.delete);
 
 		return true;
 	}
@@ -207,6 +214,82 @@ const App = {
 
 					$('#app').appendChild(card);
 					this.cardElements.push(card);
+				});
+
+				card.addEventListener('touchstart', e => {
+					e.preventDefault();
+
+					if (!('changedTouches' in e) || e.changedTouches.length === 0) {
+						return;
+					}
+
+					card.dataset.swipeIsActive = true;
+					card.dataset.swipeStartX = e.changedTouches[0].clientX;
+				});
+
+				card.addEventListener('touchmove', e => {
+					if (!card.dataset.swipeIsActive) {
+						return;
+					}
+
+					if (!('changedTouches' in e) || e.changedTouches.length === 0) {
+						return;
+					}
+
+					e.preventDefault();
+
+					const origX = parseFloat(card.dataset.swipeStartX);
+					const currX = parseFloat(e.changedTouches[0].clientX);
+
+					const delta = currX - origX;
+
+					if (delta < 0) {
+						return;
+					}
+
+					if (delta < SWIPE_THRESHOLD) {
+						return;
+					}
+
+					card.style.setProperty('--card-swipe-x', `${delta - SWIPE_THRESHOLD}px`);
+				});
+
+				card.addEventListener('touchend', e => {
+					e.preventDefault();
+
+					let isSuccess = false;
+
+					const origX = parseFloat(card.dataset.swipeStartX);
+					const currX = parseFloat(e.changedTouches[0].clientX);
+
+					const delta = currX - origX;
+
+					if (delta < 0) {
+						isSuccess = false;
+					} else if (delta < SWIPE_THRESHOLD) {
+						isSuccess = false;
+					} else if (delta < SWIPE_SUCCESS_THRESHOLD) {
+						isSuccess = false;
+					} else {
+						isSuccess = true;
+					}
+
+					if (isSuccess) {
+						card.style.setProperty('--card-swipe-x', '100%');
+					} else {
+						card.style.setProperty('--card-swipe-x', 0);
+					}
+
+					delete card.dataset.swipeIsActive;
+					delete card.dataset.swipeStartX;
+
+					if (isSuccess) {
+						const result = deleteAccount(id);
+
+						if (!result) {
+							card.style.setProperty('--card-swipe-x', 0);
+						}
+					}
 				});
 			});
 
