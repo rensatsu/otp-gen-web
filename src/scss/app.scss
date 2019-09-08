@@ -417,6 +417,10 @@ form {
 }
 
 #sync-modal {
+	.alpha-disclaimer, .alpha-disclaimer a {
+		color: mix(#fff, $color-danger, 20%);
+	}
+
 	#sync-tab-export, #sync-tab-import, #sync-tab-debug {
 		display: none;
 	}

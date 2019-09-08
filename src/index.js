@@ -528,6 +528,10 @@ const Sync = {
 				<p>Please, enter the following code on the device, where you want to copy your data to:</p>
 				<div id='sync-tab-export-code'>...</div>
 				<p id='sync-tab-export-status'></p>
+				<p class='alpha-disclaimer'>
+					WARNING: Data transfer is not end-to-end encrypted!
+					<a href='https://github.com/rensatsu/otp-gen-web#warning-' target='_blank'>More info</a>.
+				</p>
 			</div>
 
 			<div id='sync-tab-import'>
@@ -537,6 +541,10 @@ const Sync = {
 					<input type='number' id='sync-tab-import-code' maxlength='4' />
 				</div>
 				<p id='sync-tab-import-status'></p>
+				<p class='alpha-disclaimer'>
+					WARNING: Data transfer is not end-to-end encrypted!
+					<a href='https://github.com/rensatsu/otp-gen-web#warning-' target='_blank'>More info</a>.
+				</p>
 			</div>
 
 			<div id='sync-tab-debug'>

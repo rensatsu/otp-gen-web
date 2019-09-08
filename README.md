@@ -15,6 +15,9 @@ Application is available on [ren-otp.netlify.com](https://ren-otp.netlify.com).
 This application is still work in progress. Some features may break.
 Application and data security was not tested. Use at your own risk!
 
+Cloud import/export functionality is in early development stage.
+Cloud data transfer is *NOT* end-to-end encrypted and may be intercepted!
+
 ## Production build
 
 ```
