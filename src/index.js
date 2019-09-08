@@ -9,7 +9,7 @@ const IO_SERVER = "https://otp.rencloud.xyz";
 const LS = new Storage('otp');
 
 const SWIPE_THRESHOLD = 100;
-const SWIPE_SUCCESS_THRESHOLD = 400;
+const SWIPE_SUCCESS_THRESHOLD = 250;
 
 const hasClassInPath = (className, path) => {
 	for (let i in path) {
