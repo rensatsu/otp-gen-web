@@ -10,6 +10,7 @@ const LS = new Storage('otp');
 
 const SWIPE_THRESHOLD = 0.15;
 const SWIPE_SUCCESS_THRESHOLD = 0.35;
+const SWIPE_SCROLL_THRESHOLD = 0.15;
 
 const hasClassInPath = (className, path) => {
 	for (let i in path) {
@@ -131,6 +132,10 @@ const checkScreenThreshold = (x, threshold) => {
 	return x > getScreenThresholdValue(threshold);
 };
 
+const checkScrollThreshold = (x1, x2) => {
+	return Math.abs(x1 - x2) > SWIPE_SCROLL_THRESHOLD * screen.availHeight;
+}
+
 document.addEventListener('click', e => {
 	const eventPath = e.path || (e.composedPath && e.composedPath());
 	const cardElem = hasClassInPath('card', eventPath);
@@ -231,6 +236,7 @@ const App = {
 
 					card.dataset.swipeIsActive = true;
 					card.dataset.swipeStartX = e.changedTouches[0].clientX;
+					card.dataset.swipeStartY = e.changedTouches[0].clientY;
 				});
 
 				card.addEventListener('touchmove', e => {
@@ -266,6 +272,9 @@ const App = {
 					const origX = parseFloat(card.dataset.swipeStartX);
 					const currX = parseFloat(e.changedTouches[0].clientX);
 
+					const origY = parseFloat(card.dataset.swipeStartY);
+					const currY = parseFloat(e.changedTouches[0].clientY);
+
 					const delta = currX - origX;
 
 					if (delta < 0) {
@@ -278,6 +287,10 @@ const App = {
 						isSuccess = true;
 					}
 
+					if (checkScrollThreshold(origY, currY)) {
+						isSuccess = false;
+					}
+
 					if (isSuccess) {
 						card.style.setProperty('--card-swipe-x', '100%');
 					} else {
@@ -286,6 +299,7 @@ const App = {
 
 					delete card.dataset.swipeIsActive;
 					delete card.dataset.swipeStartX;
+					delete card.dataset.swipeStartY;
 
 					if (isSuccess) {
 						const result = deleteAccount(id);
