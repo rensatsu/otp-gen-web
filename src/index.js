@@ -5,7 +5,8 @@ import io from 'socket.io-client';
 import { TOTP, TOTPRemaining } from './js/totp.js';
 import './scss/app.scss';
 
-const IO_SERVER = "https://otp.rencloud.xyz";
+const IO_SERVER = 'https://rensatsu.xyz';
+const IO_PATH = '/apps/otp/';
 const LS = new Storage('otp');
 
 const SWIPE_THRESHOLD = 0.15;
@@ -422,7 +423,9 @@ const Sync = {
 		socket: false,
 
 		initiate: function () {
-			this.socket = io(IO_SERVER);
+			this.socket = io.connect(IO_SERVER, {
+				path: IO_PATH
+			});
 
 			this.socket.on('connect', _ => {
 				this.socket.emit('get-room', {}, data => {
