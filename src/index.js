@@ -492,7 +492,9 @@ const Sync = {
 		socket: false,
 
 		openRoom: function (room) {
-			this.socket = io(IO_SERVER);
+			this.socket = io.connect(IO_SERVER, {
+                                path: IO_PATH
+                        });
 
 			this.socket.on('connect', _ => {
 				this.socket.emit('check-room', { room: 'sync_' + room }, data => {
