@@ -1,14 +1,12 @@
 "use strict";
 
 import Storage from './js/storage.js';
-import io from 'socket.io-client';
 import { TOTP, TOTPRemaining } from './js/totp.js';
 import './scss/app.scss';
 
 const LS = new Storage('otp');
 
 const WS_SERVER = 'ws://localhost:29996';
-const WS_TIMEOUT = 2500;
 
 const SWIPE_THRESHOLD = 0.15;
 const SWIPE_SUCCESS_THRESHOLD = 0.35;
@@ -499,6 +497,12 @@ const Sync = {
 					$('#sync-tab-export-status').textContent = 'Synchronization completed';
 					Sync.Socket.close();
 					break;
+				case 'exception':
+					$('#sync-tab-export-status').innerHTML =
+						`Error during synchronization, try again.`;
+					$('#sync-tab-export-code').textContent = '------';
+					Sync.Socket.close();
+					break;
 			}
 		},
 
@@ -555,6 +559,12 @@ const Sync = {
 		roomId: null,
 		remotePeer: null,
 
+		unlock: function () {
+			$('#sync-tab-import-code').removeAttribute('disabled');
+			$('#sync-tab-import-code').value = '';
+			$('#sync-tab-import-code').focus();
+		},
+
 		messageHandler: function (message) {
 			console.log('message', message);
 			const roomId = Sync.Import.roomId;
@@ -568,9 +578,7 @@ const Sync = {
 				case 'import-peers':
 					if (data.peers.length === 0) {
 						$('#sync-tab-import-status').innerHTML = 'Incorrect code';
-						$('#sync-tab-import-code').removeAttribute('disabled');
-						$('#sync-tab-import-code').value = '';
-						$('#sync-tab-import-code').focus();
+						Sync.Import.unlock();
 						Sync.Socket.close();
 						return;
 					}
@@ -606,8 +614,16 @@ const Sync = {
 					break;
 				case 'import-cancel':
 					$('#sync-tab-import-status').innerHTML =
-						`Remote device has cancelled the synchronization`;
+						`Remote device has cancelled the synchronization.`;
+					Sync.Import.unlock();
 					Sync.Socket.close();
+					break;
+				case 'exception':
+					$('#sync-tab-import-status').innerHTML =
+						`Error during synchronization, try again.`;
+					Sync.Import.unlock();
+					Sync.Socket.close();
+					break;
 			}
 		},
 
@@ -632,7 +648,7 @@ const Sync = {
 			this.setMode(App.secrets.length === 0 ? 'import' : 'export');
 		});
 
-		$('#sync-modal-title').innerHTML = 'Synchronization';
+		$('#sync-modal-title').textContent = 'Synchronization';
 
 		$('#sync-modal-body').innerHTML = `
 			<div>
@@ -722,11 +738,13 @@ const Sync = {
 			});
 		});
 
-		$('#sync-tab-import-code').addEventListener('keyup', e => {
-			if (e.target.value.length === 6) {
-				e.target.disabled = 'disabled';
-				this.Import.openRoom(e.target.value);
-			}
+		['keyup', 'paste'].forEach(eventName => {
+			$('#sync-tab-import-code').addEventListener(eventName, e => {
+				if (e.target.value.length === 6) {
+					e.target.disabled = 'disabled';
+					this.Import.openRoom(e.target.value);
+				}
+			});
 		});
 
 		$('#sync-tab-import-code').addEventListener('keypress', e => {
@@ -734,7 +752,7 @@ const Sync = {
 				e.preventDefault();
 			}
 
-			$('#sync-tab-import-status').innerHTML = '';
+			$('#sync-tab-import-status').textContent = '';
 		});
 	}
 }
@@ -790,7 +808,7 @@ const NewEntry = {
 			e.preventDefault();
 			const entries = new FormData(e.target);
 
-			let Item = {
+			const Item = {
 				title: false,
 				secret: false,
 				account: false
