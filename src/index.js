@@ -5,9 +5,10 @@ import io from 'socket.io-client';
 import { TOTP, TOTPRemaining } from './js/totp.js';
 import './scss/app.scss';
 
-const IO_SERVER = 'https://rensatsu.xyz';
-const IO_PATH = '/apps/otp/';
 const LS = new Storage('otp');
+
+const WS_SERVER = 'ws://localhost:29996';
+const WS_TIMEOUT = 2500;
 
 const SWIPE_THRESHOLD = 0.15;
 const SWIPE_SUCCESS_THRESHOLD = 0.35;
@@ -418,130 +419,208 @@ const Sync = {
 		}
 	},
 
+	Socket: {
+		ws: null,
+		messageHandler: null,
+		mode: null,
+
+		connect: function (mode) {
+			if (this.ws !== null) {
+				this.close();
+			}
+
+			console.log('[socket]', 'connecting', mode);
+			const ws = new WebSocket(WS_SERVER);
+
+			this.ws = ws;
+			this.mode = mode;
+
+			ws.onmessage = e => {
+				try {
+					const data = JSON.parse(e.data);
+
+					if (this.messageHandler) {
+						this.messageHandler(data);
+					};
+				} catch (e) {
+					console.warn('[socket]', 'unable to decode a message', e);
+				}
+			};
+
+			ws.onclose = e => {
+				console.warn('[socket]', 'connection closed', e);
+			};
+
+			ws.onopen = e => {
+				console.info('[socket]', 'open', e);
+				this.setMode(this.mode);
+			};
+		},
+
+		close: function () {
+			if (this.ws === null) return;
+			this.ws.close();
+		},
+
+		send: function (kind, data = null) {
+			if (this.ws === null) return;
+
+			this.ws.send(JSON.stringify({
+				kind: kind,
+				data: data
+			}));
+		},
+
+		setMode: function (mode) {
+			this.send('mode', mode);
+		}
+	},
+
 	Export: {
-		roomId: false,
-		socket: false,
+		roomId: null,
+		remotePeer: null,
+		verificationCode: null,
+
+		messageHandler: function (message) {
+			console.log('message', message);
+			const kind = message.kind || null;
+			const data = message.data || null;
+
+			switch (kind) {
+				case 'export-connect':
+					Sync.Export.roomId = data.syncId;
+					$('#sync-tab-export-code').textContent = data.syncId;
+					break;
+				case 'export-peer-connect':
+					Sync.Export.remotePeer = data.uuid;
+					Sync.Export.startVerification();
+					break;
+				case 'export-finish':
+					$('#sync-tab-export-status').textContent = 'Synchronization completed';
+					Sync.Socket.close();
+					break;
+			}
+		},
 
 		initiate: function () {
-			this.socket = io.connect(IO_SERVER, {
-				path: IO_PATH
-			});
-
-			this.socket.on('connect', _ => {
-				this.socket.emit('get-room', {}, data => {
-					console.log('[Socket.IO]', 'get-room', data);
-					this.roomId = data;
-					$('#sync-tab-export-code').innerHTML = data.replace('sync_', '');
-				});
-			});
-
-			this.socket.on('device-connected', data => {
-				console.log('[Socket.IO]', 'device-connected', (data));
-				if (data.room == this.roomId && data.clients >= 2) {
-					this.startVerification();
-				}
-			});
+			Sync.Socket.messageHandler = this.messageHandler;
+			Sync.Socket.connect('export');
 		},
 
 		startVerification: function () {
 			const verification = ("00" + Math.floor(Math.random() * 100)).substr(-2);
-			this.socket.emit('send-verification', verification);
 
-			this.socket.on('handle-verification', data => {
-				console.log('[Socket.IO]', 'handle-verification', data);
+			Sync.Export.verificationCode = verification;
 
-				$('#sync-tab-export-status').innerHTML = `
-					<div class='sync-prompt'>
-						Is your other device shows the code <b>${data.code}</b>?
-						<div>
-							<button class='sync-prompt-button' data-response='yes'>Yes</button>
-							<button class='sync-prompt-button' data-response='no'>No</button>
-						</div>
-					</div>
-				`;
-
-				$('#sync-tab-export-status .sync-prompt-button').forEach(item => {
-					item.addEventListener('click', e => {
-						if (e.target.dataset.response !== 'yes') {
-							$('#sync-tab-export-status').innerHTML = 'Sync cancelled';
-							$('#sync-tab-export-code').innerHTML = '----';
-							this.socket.emit('disconnect');
-							this.socket.disconnect();
-						} else {
-							$('#sync-tab-export-status').innerHTML = 'Sending data';
-							const secrets = JSON.stringify(App.getSecrets());
-
-							this.socket.emit('data-export', secrets, data => {
-								$('#sync-tab-export-status').innerHTML = 'Sync completed';
-								this.socket.emit('disconnect');
-								this.socket.disconnect();
-							});
-						}
-					});
-				});
+			Sync.Socket.send('export-verification', {
+				peer: Sync.Export.remotePeer,
+				code: verification,
 			});
 
-			this.socket.on('device-disconnected', (data) => {
-				console.log('[Socket.IO]', 'device-disconnected', data);
-				$('#sync-tab-export-status').innerHTML = `Remote device disconnected.`;
+			$('#sync-tab-export-status').innerHTML = `
+				<div class='sync-prompt'>
+					Is your other device shows the code <b>${verification}</b>?
+					<div>
+						<button class='sync-prompt-button' data-response='yes'>Yes</button>
+						<button class='sync-prompt-button' data-response='no'>No</button>
+					</div>
+				</div>
+			`;
+
+			$('#sync-tab-export-status .sync-prompt-button').forEach(item => {
+				item.addEventListener('click', e => {
+					if (e.target.dataset.response !== 'yes') {
+						$('#sync-tab-export-status').textContent = 'Sync cancelled';
+						$('#sync-tab-export-code').textContent = '------';
+						Sync.Socket.send('export-cancel', {
+							peer: Sync.Export.remotePeer
+						});
+
+						Sync.Socket.close();
+					} else {
+						$('#sync-tab-export-status').textContent = 'Sending data';
+						const secrets = JSON.stringify(App.getSecrets());
+
+						Sync.Socket.send('export-data', {
+							peer: Sync.Export.remotePeer,
+							secrets: secrets,
+						});
+					}
+				});
 			});
 		}
 	},
 
 	Import: {
-		socket: false,
+		roomId: null,
+		remotePeer: null,
 
-		openRoom: function (room) {
-			this.socket = io(IO_SERVER);
+		messageHandler: function (message) {
+			console.log('message', message);
+			const roomId = Sync.Import.roomId;
+			const kind = message.kind || null;
+			const data = message.data || null;
 
-			this.socket.on('connect', _ => {
-				this.socket.emit('check-room', { room: 'sync_' + room }, data => {
-					console.log('[Socket.IO]', 'check-room', data);
-					if (!data.accepted) {
+			switch (kind) {
+				case 'import-connect':
+					Sync.Socket.send('import-init', roomId);
+					break;
+				case 'import-peers':
+					if (data.peers.length === 0) {
 						$('#sync-tab-import-status').innerHTML = 'Incorrect code';
 						$('#sync-tab-import-code').removeAttribute('disabled');
 						$('#sync-tab-import-code').value = '';
 						$('#sync-tab-import-code').focus();
-						this.socket.emit('disconnect');
-						this.socket.disconnect();
-					} else {
-						$('#sync-tab-import-status').innerHTML = 'Connected, waiting';
+						Sync.Socket.close();
+						return;
 					}
-				});
-			});
 
-			this.socket.on('handle-verification', data => {
-				console.log('[Socket.IO]', 'handle-verification', data);
-				$('#sync-tab-import-status').innerHTML = `Verification code: <b>${data.code}</b>.`;
-			});
+					$('#sync-tab-import-status').textContent =
+						`Connected, waiting for remote client`;
 
-			this.socket.on('device-disconnected', data => {
-				console.log('[Socket.IO]', 'device-disconnected', data);
-				$('#sync-tab-import-status').innerHTML = `Remote device disconnected.`;
-				$('#sync-tab-import-code').removeAttribute('disabled');
-				$('#sync-tab-import-code').value = '';
-				$('#sync-tab-import-code').focus();
-				this.socket.emit('disconnect');
-				this.socket.disconnect();
-			});
+					const peer = data.peers[0];
 
-			this.socket.on('data-import', data => {
-				LS.set('accounts', data.data);
-				App.render();
-				Sync.close();
-				Message.show('Synchronization completed');
-				$('#sync-tab-import-status').innerHTML = `Got data`;
-			});
+					Sync.Import.remotePeer = peer;
+
+					Sync.Socket.send('import-peer-connect', {
+						roomId: roomId,
+						peer: peer,
+					});
+
+					break;
+				case 'import-verification':
+					$('#sync-tab-import-status').innerHTML =
+						`Verification code: <b>${data.code}</b>.`;
+					break;
+				case 'import-data':
+					$('#sync-tab-import-status').textContent = `Got data`;
+
+					Sync.Socket.send('import-finish', {
+						peer: Sync.Import.remotePeer || null,
+					});
+
+					LS.set('accounts', data.secrets);
+					App.render();
+					Sync.close();
+					Message.show('Synchronization completed');
+					break;
+				case 'import-cancel':
+					$('#sync-tab-import-status').innerHTML =
+						`Remote device has cancelled the synchronization`;
+					Sync.Socket.close();
+			}
+		},
+
+		openRoom: function (room) {
+			Sync.Import.roomId = room;
+			Sync.Socket.messageHandler = this.messageHandler;
+			Sync.Socket.connect('import');
 		}
 	},
 
 	close: function () {
 		$('#sync-modal').classList.remove('show');
-
-		if (this.Export.socket) {
-			this.Export.socket.disconnect();
-			this.Export.socket = false;
-		}
+		Sync.Socket.close();
 	},
 
 	init: function () {
@@ -644,7 +723,7 @@ const Sync = {
 		});
 
 		$('#sync-tab-import-code').addEventListener('keyup', e => {
-			if (e.target.value.length === 4) {
+			if (e.target.value.length === 6) {
 				e.target.disabled = 'disabled';
 				this.Import.openRoom(e.target.value);
 			}
