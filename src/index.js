@@ -371,179 +371,8 @@ const Modal = {
 }
 
 const Sync = {
-	alphaDisclaimerLink: function () {
-		return 'https://github.com/rensatsu/otp-gen-web/blob/master/README.md#warning-';
-	},
-
-	alphaDisclaimerTpl: function () {
-		return `
-			<p class='alpha-disclaimer'>
-				WARNING: Data transfer is not end-to-end encrypted!
-				<a href='${this.alphaDisclaimerLink()}' target='_blank'>
-					More info.
-				</a>
-			</p>
-		`;
-	},
-
-	setMode: function (mode) {
-		if (mode === 'export') {
-			$('#sync-tab-import').style.display = 'none';
-			$('#sync-tab-export').style.display = 'block';
-			$('#sync-tab-debug').style.display = 'none';
-
-			$('#sync-modal-title').innerHTML = 'Data export';
-
-			$('#sync-tab-export-code').innerHTML = '...';
-			$('#sync-tab-export-status').innerHTML = '';
-
-			this.Export.initiate();
-		} else if (mode === 'import') {
-			$('#sync-tab-export').style.display = 'none';
-			$('#sync-tab-import').style.display = 'block';
-			$('#sync-tab-debug').style.display = 'none';
-
-			$('#sync-modal-title').innerHTML = 'Data import';
-
-			$('#sync-tab-import-status').innerHTML = '';
-			$('#sync-tab-import-code').removeAttribute('disabled');
-			$('#sync-tab-import-code').value = '';
-			$('#sync-tab-import-code').focus();
-		} else {
-			$('#sync-tab-export').style.display = 'none';
-			$('#sync-tab-import').style.display = 'none';
-			$('#sync-tab-debug').style.display = 'block';
-
-			$('#sync-modal-title').innerHTML = 'Debug';
-		}
-	},
-
-	Export: {
-		roomId: false,
-		socket: false,
-
-		initiate: function () {
-			this.socket = io.connect(IO_SERVER, {
-				path: IO_PATH
-			});
-
-			this.socket.on('connect', _ => {
-				this.socket.emit('get-room', {}, data => {
-					console.log('[Socket.IO]', 'get-room', data);
-					this.roomId = data;
-					$('#sync-tab-export-code').innerHTML = data.replace('sync_', '');
-				});
-			});
-
-			this.socket.on('device-connected', data => {
-				console.log('[Socket.IO]', 'device-connected', (data));
-				if (data.room == this.roomId && data.clients >= 2) {
-					this.startVerification();
-				}
-			});
-		},
-
-		startVerification: function () {
-			const verification = ("00" + Math.floor(Math.random() * 100)).substr(-2);
-			this.socket.emit('send-verification', verification);
-
-			this.socket.on('handle-verification', data => {
-				console.log('[Socket.IO]', 'handle-verification', data);
-
-				$('#sync-tab-export-status').innerHTML = `
-					<div class='sync-prompt'>
-						Is your other device shows the code <b>${data.code}</b>?
-						<div>
-							<button class='sync-prompt-button' data-response='yes'>Yes</button>
-							<button class='sync-prompt-button' data-response='no'>No</button>
-						</div>
-					</div>
-				`;
-
-				$('#sync-tab-export-status .sync-prompt-button').forEach(item => {
-					item.addEventListener('click', e => {
-						if (e.target.dataset.response !== 'yes') {
-							$('#sync-tab-export-status').innerHTML = 'Sync cancelled';
-							$('#sync-tab-export-code').innerHTML = '----';
-							this.socket.emit('disconnect');
-							this.socket.disconnect();
-						} else {
-							$('#sync-tab-export-status').innerHTML = 'Sending data';
-							const secrets = JSON.stringify(App.getSecrets());
-
-							this.socket.emit('data-export', secrets, data => {
-								$('#sync-tab-export-status').innerHTML = 'Sync completed';
-								this.socket.emit('disconnect');
-								this.socket.disconnect();
-							});
-						}
-					});
-				});
-			});
-
-			this.socket.on('device-disconnected', (data) => {
-				console.log('[Socket.IO]', 'device-disconnected', data);
-				$('#sync-tab-export-status').innerHTML = `Remote device disconnected.`;
-			});
-		}
-	},
-
-	Import: {
-		socket: false,
-
-		openRoom: function (room) {
-			this.socket = io.connect(IO_SERVER, {
-                                path: IO_PATH
-                        });
-
-			this.socket.on('connect', _ => {
-				this.socket.emit('check-room', { room: 'sync_' + room }, data => {
-					console.log('[Socket.IO]', 'check-room', data);
-					if (!data.accepted) {
-						$('#sync-tab-import-status').innerHTML = 'Incorrect code';
-						$('#sync-tab-import-code').removeAttribute('disabled');
-						$('#sync-tab-import-code').value = '';
-						$('#sync-tab-import-code').focus();
-						this.socket.emit('disconnect');
-						this.socket.disconnect();
-					} else {
-						$('#sync-tab-import-status').innerHTML = 'Connected, waiting';
-					}
-				});
-			});
-
-			this.socket.on('handle-verification', data => {
-				console.log('[Socket.IO]', 'handle-verification', data);
-				$('#sync-tab-import-status').innerHTML = `Verification code: <b>${data.code}</b>.`;
-			});
-
-			this.socket.on('device-disconnected', data => {
-				console.log('[Socket.IO]', 'device-disconnected', data);
-				$('#sync-tab-import-status').innerHTML = `Remote device disconnected.`;
-				$('#sync-tab-import-code').removeAttribute('disabled');
-				$('#sync-tab-import-code').value = '';
-				$('#sync-tab-import-code').focus();
-				this.socket.emit('disconnect');
-				this.socket.disconnect();
-			});
-
-			this.socket.on('data-import', data => {
-				LS.set('accounts', data.data);
-				App.render();
-				Sync.close();
-				Message.show('Synchronization completed');
-				$('#sync-tab-import-status').innerHTML = `Got data`;
-			});
-		}
-	},
-
 	close: function () {
 		$('#sync-modal').classList.remove('show');
-
-		if (this.Export.socket) {
-			this.Export.socket.disconnect();
-			this.Export.socket = false;
-		}
 	},
 
 	init: function () {
@@ -552,41 +381,20 @@ const Sync = {
 		$('#app-sync').addEventListener('click', e => {
 			e.preventDefault();
 			$('#sync-modal').classList.add('show');
-			this.setMode(App.secrets.length === 0 ? 'import' : 'export');
 		});
 
-		$('#sync-modal-title').innerHTML = 'Synchronization';
+		$('#sync-modal-title').innerHTML = 'Debug and demo mode';
 
 		$('#sync-modal-body').innerHTML = `
-			<div>
-				<button class='sync-tab' data-tab='import'>Import</button>
-				<button class='sync-tab' data-tab='export'>Export</button>
-				<button class='sync-tab' data-tab='debug'>Debug</button>
-			</div>
-
-			<div id='sync-tab-export'>
-				<p>Please, enter the following code on the device, where you want to copy your data to:</p>
-				<div id='sync-tab-export-code'>...</div>
-				<p id='sync-tab-export-status'></p>
-				${this.alphaDisclaimerTpl()}
-			</div>
-
-			<div id='sync-tab-import'>
-				<p>Please, enter the code from another device:</p>
-				<p class='note'>Note: All existing accounts will be deleted</p>
-				<div>
-					<input type='number' id='sync-tab-import-code' maxlength='4' />
-				</div>
-				<p id='sync-tab-import-status'></p>
-				${this.alphaDisclaimerTpl()}
-			</div>
-
 			<div id='sync-tab-debug'>
+				<p class='note-danger'>Export and import functionality deprecated.</p>
 				<p class='note-danger'>WARNING: Using any of the buttons below will DELETE ALL YOUR ACCOUNTS!</p>
 				<p><button class='button-danger' id='sync-debug-clear'>Delete all accounts</button></p>
 				<p><button class='button-danger' id='sync-debug-demo'>Delete all and enable demo mode</button></p>
 			</div>
 		`;
+
+		$('#sync-tab-debug').style.display = 'block';
 
 		$('#sync-debug-clear').addEventListener('click', e => {
 			e.preventDefault();
@@ -636,28 +444,6 @@ const Sync = {
 				App.render();
 				Sync.close();
 			}
-		});
-
-		$('.sync-tab').forEach(item => {
-			item.addEventListener('click', e => {
-				e.preventDefault();
-				this.setMode(e.target.dataset.tab);
-			});
-		});
-
-		$('#sync-tab-import-code').addEventListener('keyup', e => {
-			if (e.target.value.length === 4) {
-				e.target.disabled = 'disabled';
-				this.Import.openRoom(e.target.value);
-			}
-		});
-
-		$('#sync-tab-import-code').addEventListener('keypress', e => {
-			if (isNaN(parseInt(e.key))) {
-				e.preventDefault();
-			}
-
-			$('#sync-tab-import-status').innerHTML = '';
 		});
 	}
 }
