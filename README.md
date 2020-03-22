@@ -12,11 +12,9 @@ Application is available on [ren-otp.netlify.com](https://ren-otp.netlify.com).
 
 ## Warning ⚠
 
-This application is still work in progress. Some features may break.
-Application and data security was not tested. Use at your own risk!
+This application is deprecated and is no longer being developed.
 
-Cloud import/export functionality is in early development stage.
-Cloud data transfer is *NOT* end-to-end encrypted and may be intercepted!
+Please, use [Authy][authy], [Aegis][aegis] or [any][googleauth] [other][microsoftauth] similar application instead.
 
 ## Production build
 
